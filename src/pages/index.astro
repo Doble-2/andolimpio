@@ -111,7 +111,7 @@ const glossary = [
         <div class="kpi"><dd>{pct(ENCOVI.poorPersons * 100)}</dd><dt>De las personas vive en pobreza de ingresos ({pct(ENCOVI.poorHomes * 100)} de los hogares). En 2024: 80,2 %.</dt></div>
         <div class="kpi"><dd>{pct(ENCOVI.extremePersons * 100)}</dd><dt>Vive en pobreza extrema: su ingreso no cubre los alimentos ({pct(ENCOVI.extremeHomes * 100)} de los hogares). En 2024: 43,7 %.</dt></div>
         <div class="kpi"><dd>{nf(RATIO)} <small>veces</small></dd><dt>Gana por persona el 10 % más rico ({usd(ENCOVI.decileAvg[9], 1)}) frente al 10 % más pobre ({usd(ENCOVI.decileAvg[0], 1)}).</dt></div>
-        <div class="kpi"><dd>{nf(ENCOVI.gini, 3)}</dd><dt>Coeficiente de Gini, desde {nf(ENCOVI.gini2024, 3)} en 2024: la desigualdad bajó a niveles de 2016.</dt></div>
+        <div class="kpi"><dd>{nf(ENCOVI.gini, 3)}</dd><dt>Coeficiente de Gini; era {nf(ENCOVI.gini2024, 3)} en 2024. La desigualdad volvió a niveles cercanos a los de 2016.</dt></div>
       </dl>
       <p class="cap">Fuente: <a href={SOURCE.pdf}>ENCOVI 2025, presentación de resultados</a> (UCAB, 7 de mayo de 2026), láminas 4, 5, 36, 38 y 39. La razón entre deciles es cálculo propio con los promedios publicados.</p>
     </section>
@@ -162,7 +162,7 @@ const glossary = [
     <section class="wrap block" id="evolucion">
       <div class="head">
         <div><p class="eyebrow"><b>04</b>Evolución</p><h2>Los que menos ganan son los que más mejoraron</h2></div>
-        <p class="intro">Entre 2023 y 2025 el ingreso por persona subió en todos los grupos. En los cinco más pobres creció entre 70 % y 81 %; en el más rico, 37 %. Por eso bajó la desigualdad.</p>
+        <p class="intro">Entre 2023 y 2025 el ingreso por persona subió en todos los grupos. En los cinco más pobres creció entre 70 % y 81 %; en el más rico, 37 %. Eso contribuyó a que bajara la desigualdad.</p>
       </div>
       <div class="tablewrap">
         <table>
@@ -203,7 +203,7 @@ const glossary = [
       </div>
       <p class="cap">Promedio de los ocupados mayores de 25 años. Fuente: <a href={SOURCE.pdf2024}>ENCOVI 2024</a>, lámina 58; la edición 2025 no publica este dato. Valores tal como se publican; la lámina indica −6,0 % para media incompleta, que no coincide con los montos mostrados. Úsalos para comparar niveles entre sí.</p>
 
-      <p class="cap">En 2024 los hombres ganaron 52 US$ al mes más que las mujeres (36,7 %) (<a href={SOURCE.pdf2024}>ENCOVI 2024</a>, lámina 56). ENCOVI no publica en sus presentaciones de 2024 y 2025 ingresos por edad ni por rama de actividad (industria), así que esos cortes no están aquí.</p>
+      <p class="cap">En 2024 los hombres ganaron US$ 52 al mes más que las mujeres, un 36,7 % más (<a href={SOURCE.pdf2024}>ENCOVI 2024</a>, lámina 56). ENCOVI no publica en sus presentaciones de 2024 y 2025 ingresos por edad ni por rama de actividad (industria), así que esos cortes no están aquí.</p>
     </section>
 
     <section class="wrap block" id="metodo">

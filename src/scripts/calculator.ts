@@ -79,7 +79,7 @@ function renderResult() {
 
 function renderTables(dec: number) {
   const gv = g(), maxAvg = gv * BASE_AVG[9];
-  $('#distIntro').textContent = `Montos para un hogar ${SIZE_TXT[S.si]}: el ingreso por persona de ENCOVI 2025 multiplicado por el tamaño del hogar. La desigualdad sigue siendo alta: el 10 % que más gana se lleva cerca del ${nf(SHARES[9] * 100)} % del ingreso total, y el país tiene unos ${nf(ENCOVI.homes / 1e6)} millones de hogares.`;
+  $('#distIntro').textContent = `Montos para un hogar ${SIZE_TXT[S.si]}: el ingreso por persona de ENCOVI 2025 multiplicado por el tamaño del hogar. La desigualdad sigue siendo alta: el 10 % que más gana se lleva cerca del ${nf(SHARES[9] * 100)} % del ingreso total.`;
   $('#tabCap').textContent = `Hogares ${SIZE_TXT[S.si]}. Montos mensuales en dólares; la columna por persona es el promedio publicado por ENCOVI 2025.`;
   let h = '';
   for (let k = 0; k < 10; k++) {
