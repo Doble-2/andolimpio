@@ -1,0 +1,233 @@
+---
+import Base from '../layouts/Base.astro';
+import { CL, EDUCATION, ENCOVI, LINE_EXT, LINE_POOR, P, Q, RATIO, SOURCE, WORK, nf, usd } from '../lib/model';
+
+const BRAND = 'Andolimpio';
+
+// Todo lo que no depende de lo que escribe la persona se calcula aquí, al construir el sitio.
+const cuts = CL.slice(0, 4).map((c) => P(c.lt));
+const shares = [cuts[0], cuts[1] - cuts[0], cuts[2] - cuts[1], cuts[3] - cuts[2], 1 - cuts[3]];
+const classes = CL.map((c, i) => ({ ...c, pct: shares[i] * 100 }));
+const pct = (v: number, d = 1) => nf(v, d) + ' %';
+const change = ENCOVI.decileAvg.map((v, k) => ({ k: k + 1, a: ENCOVI.decileAvg2023[k], b: v, d: (v / ENCOVI.decileAvg2023[k] - 1) * 100 }));
+const glossary = [
+  ['Decil', 'Cada uno de los 10 grupos con la misma cantidad de personas, ordenados del que menos gana (1) al que más gana (10).'],
+  ['Ingreso por persona', 'Lo que gana el hogar dividido entre las personas que viven en él. Es la medida que usa ENCOVI para comparar hogares de distinto tamaño.'],
+  ['Pobreza de ingresos', 'El ingreso por persona no alcanza para cubrir alimentos y otras necesidades básicas. Pobreza extrema: no alcanza ni para los alimentos.'],
+  ['Coeficiente de Gini', 'Mide la desigualdad del ingreso de 0 (todos ganan lo mismo) a 1 (una persona lo gana todo).'],
+  ['ENCOVI', 'Encuesta Nacional sobre Condiciones de Vida, del Instituto de Investigaciones Económicas y Sociales de la UCAB. Principal fuente independiente ante la falta de cifras oficiales.'],
+];
+---
+<Base
+  title={`${BRAND} · ¿Cuántos venezolanos viven con menos que tu hogar?`}
+  description="Escribe cuánto entra al mes en tu hogar, en dólares, y compáralo con la distribución del ingreso de ENCOVI 2025."
+>
+  <div class="notice"><div class="wrap"><b>Datos ENCOVI 2025.</b><span>Cifras publicadas por la UCAB con referencia a mayo de 2025. La ubicación de tu hogar es una estimación propia a partir de ellas, no un dato oficial.</span></div></div>
+
+  <header class="top">
+    <div class="wrap">
+      <a class="brand" href="#calculadora"><strong>{BRAND}</strong><span>Ingresos de los hogares venezolanos</span></a>
+      <nav class="nav" aria-label="Secciones">
+        <a href="#calculadora">Tu hogar</a>
+        <a href="#cifras">Cifras clave</a>
+        <a href="#distribucion">Distribución</a>
+        <a href="#clases">Clases sociales</a>
+        <a href="#evolucion">2023–2025</a>
+        <a href="#trabajo">Trabajo y estudios</a>
+        <a href="#metodo">Metodología</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="wrap hero" id="calculadora">
+      <div>
+        <p class="eyebrow"><b>Calculadora</b>Ingreso del hogar</p>
+        <h1>¿Cuántos venezolanos viven con <em>menos</em> que tu hogar?</h1>
+        <p class="lede">Escribe cuánto entra al mes en tu casa, en dólares, y mira dónde queda tu hogar en la distribución del ingreso del país.</p>
+
+        <div class="panel-in">
+          <div class="field">
+            <label for="inc">¿Cuánto entra al mes en tu hogar?</label>
+            <div class="money"><span>US$</span><input id="inc" type="text" inputmode="numeric" autocomplete="off" value="480" aria-describedby="incHelp" /></div>
+            <input class="slider" id="slider" type="range" min="0" max="1000" step="1" value="0" aria-label="Ajustar el ingreso con el deslizador" />
+            <div class="chips" role="group" aria-label="Ejemplos de ingreso">
+              {[[150, '150'], [400, '400'], [1000, '1.000'], [3000, '3.000']].map(([v, l]) => <button class="chip" type="button" data-v={v}>US$ {l}</button>)}
+            </div>
+            <p class="help" id="incHelp">Suma todo lo que entra: sueldos, bonos, remesas, pensiones y lo que sacan por cuenta propia. Si cobran en bolívares, pásalo a dólares con el cambio que usan normalmente.</p>
+          </div>
+
+          <div class="field">
+            <span class="lbl" id="szl">¿Cuántas personas viven en tu hogar?</span>
+            <div class="seg" role="radiogroup" aria-labelledby="szl">
+              {['1', '2', '3', '4', '5 o más'].map((l, i) => <label><input type="radio" name="size" value={i} checked={i === 2} /><span>{l}</span></label>)}
+            </div>
+            <p class="help">Dividimos el ingreso entre las personas del hogar, como hace ENCOVI. El hogar promedio tiene {nf(ENCOVI.homeSize, 1)} personas.</p>
+          </div>
+        </div>
+      </div>
+
+      <section class="result" aria-live="polite" aria-label="Resultado">
+        <div class="verdict">
+          <p class="big"><span class="n" id="decNum">—</span></p>
+          <p class="say" id="say"><noscript>Activa JavaScript para usar la calculadora.</noscript></p>
+        </div>
+        <ol class="ruler" id="ruler" aria-label="Los diez grupos de la población, de los que menos ganan a los que más ganan"></ol>
+        <div class="ends" aria-hidden="true"><span>Ganan menos</span><span>Ganan más</span></div>
+        <p class="where" id="where"></p>
+
+        <dl class="stats">
+          <div class="stat"><dt id="s1l"></dt><dd id="s1">—</dd></div>
+          <div class="stat"><dt id="s2l"></dt><dd id="s2">—</dd></div>
+          <div class="stat"><dt id="s3l"></dt><dd id="s3">—</dd></div>
+        </dl>
+
+        <div class="cls"><span class="dot" id="clsDot"></span><p id="clsText"></p></div>
+        <p class="warn" id="warn" hidden></p>
+
+        <details class="more">
+          <summary>¿Qué significa esto?</summary>
+          <p>Ordenamos a todos los venezolanos según el ingreso por persona de su hogar y los partimos en 10 grupos del mismo tamaño (deciles). El grupo 1 es el que menos gana y el 10, el que más.</p>
+          <p>Para entrar a cada grupo, un hogar como el tuyo necesita ganar al mes, como mínimo:</p>
+          <ul class="thrlist" id="thr"></ul>
+        </details>
+      </section>
+    </section>
+
+    <section class="wrap block" id="cifras">
+      <div class="head">
+        <div><p class="eyebrow"><b>01</b>Panorama</p><h2>Venezuela en cuatro cifras</h2></div>
+        <p class="intro">Resultados de ENCOVI 2025, con referencia a mayo de 2025: {nf(ENCOVI.sample)} hogares encuestados en todo el país, unos {nf(ENCOVI.homes / 1e6)} millones de hogares y {nf(ENCOVI.population / 1e6, 1)} millones de personas.</p>
+      </div>
+      <dl class="kpis">
+        <div class="kpi"><dd>{pct(ENCOVI.poorPersons * 100)}</dd><dt>De las personas vive en pobreza de ingresos ({pct(ENCOVI.poorHomes * 100)} de los hogares). En 2024: 80,2 %.</dt></div>
+        <div class="kpi"><dd>{pct(ENCOVI.extremePersons * 100)}</dd><dt>Vive en pobreza extrema: su ingreso no cubre los alimentos ({pct(ENCOVI.extremeHomes * 100)} de los hogares). En 2024: 43,7 %.</dt></div>
+        <div class="kpi"><dd>{nf(RATIO)} <small>veces</small></dd><dt>Gana por persona el 10 % más rico ({usd(ENCOVI.decileAvg[9], 1)}) frente al 10 % más pobre ({usd(ENCOVI.decileAvg[0], 1)}).</dt></div>
+        <div class="kpi"><dd>{nf(ENCOVI.gini, 3)}</dd><dt>Coeficiente de Gini, desde {nf(ENCOVI.gini2024, 3)} en 2024: la desigualdad bajó a niveles de 2016.</dt></div>
+      </dl>
+      <p class="cap">Fuente: <a href={SOURCE.pdf}>ENCOVI 2025, presentación de resultados</a> (UCAB, 7 de mayo de 2026), láminas 4, 5, 36, 38 y 39. La razón entre deciles es cálculo propio con los promedios publicados.</p>
+    </section>
+
+    <section class="wrap block" id="distribucion">
+      <div class="head">
+        <div><p class="eyebrow"><b>02</b>Distribución</p><h2>Así se reparte el ingreso entre los venezolanos</h2></div>
+        <p class="intro" id="distIntro"></p>
+      </div>
+      <figure class="fig">
+        <p class="fig-label">Gráfico 1 · Ingreso mensual de un hogar de tu tamaño (escala logarítmica)</p>
+        <div id="densityChart" aria-label="Distribución del ingreso mensual del hogar, escala logarítmica" role="img"></div>
+        <p class="readout" id="readout">Mueve el cursor o toca el gráfico para explorar cuánto vale cada nivel de ingreso.</p>
+        <figcaption class="cap">Cada color es un grupo con el 10 % de la población: el 1 es el que menos gana y el 10, el que más. La forma de la curva se estima a partir de los promedios por decil de ENCOVI 2025; los extremos son una extrapolación.</figcaption>
+      </figure>
+
+      <h3>Qué gana cada grupo</h3>
+      <p class="cap" id="tabCap"></p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Grupo</th><th>Desde (US$ al mes)</th><th>Ingreso promedio del hogar</th><th>Por persona (ENCOVI)</th><th>Parte del ingreso total</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <h3>Cuánto necesita ganar un hogar para entrar a cada grupo</h3>
+      <p class="cap" id="matCap"></p>
+      <div class="tablewrap"><table id="matrix"></table></div>
+    </section>
+
+    <section class="wrap block" id="clases">
+      <div class="head">
+        <div><p class="eyebrow"><b>03</b>Clases sociales</p><h2>¿En qué clase social queda tu hogar?</h2></div>
+        <p class="intro">Comparamos el ingreso por persona de tu hogar con las líneas de pobreza. La barra representa a toda la población; la marca amarilla, a tu hogar.</p>
+      </div>
+      <div class="stack-wrap">
+        <div class="you" id="you" hidden><span>Tu hogar</span><i></i></div>
+        <div class="stack">
+          {classes.map((c, i) => <div class={i === 2 ? 'dk' : ''} style={`flex:${Math.max(c.pct / 100, 0.004).toFixed(4)} 1 0;background:var(${c.c})`}>{c.pct >= 7 ? nf(c.pct) + ' %' : ''}</div>)}
+        </div>
+      </div>
+      <div class="legend">
+        {classes.map((c) => <div><span class="dot" style={`--cc:var(${c.c})`}></span><strong>{c.n}</strong><em>{c.pct < 1 ? 'menos de 1 %' : pct(c.pct)}</em><small>{c.def}</small></div>)}
+      </div>
+      <p class="cap">Los dos primeros porcentajes son los publicados por ENCOVI 2025 para personas. ENCOVI no publica el valor en dólares de sus líneas; las estimamos en unos {usd(LINE_EXT)} (pobreza extrema) y {usd(LINE_POOR)} (pobreza) por persona al mes, que son los ingresos que dejan por debajo a esos porcentajes. Vulnerable, clase media y clase alta son una propuesta de este sitio, en múltiplos de la línea de pobreza; no existe una clasificación oficial.</p>
+    </section>
+
+    <section class="wrap block" id="evolucion">
+      <div class="head">
+        <div><p class="eyebrow"><b>04</b>Evolución</p><h2>Los que menos ganan son los que más mejoraron</h2></div>
+        <p class="intro">Entre 2023 y 2025 el ingreso por persona subió en todos los grupos. En los cinco más pobres creció entre 70 % y 81 %; en el más rico, 37 %. Por eso bajó la desigualdad.</p>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Grupo</th><th>2023 (US$ por persona)</th><th>2025 (US$ por persona)</th><th>Variación</th></tr></thead>
+          <tbody>
+            {change.map((c) => <tr><th scope="row">Grupo {c.k}</th><td>{usd(c.a, 1)}</td><td>{usd(c.b, 1)}</td><td>+{nf(c.d)}&nbsp;%<span class="bar" style={`width:${(c.d / 81 * 100).toFixed(1)}%`}></span></td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p class="cap">Fuente: <a href={SOURCE.pdf}>ENCOVI 2025</a>, lámina 38. Promedios mensuales en dólares corrientes, sin ajustar por inflación en dólares.</p>
+    </section>
+
+    <section class="wrap block" id="trabajo">
+      <div class="head">
+        <div><p class="eyebrow"><b>05</b>Trabajo y estudios</p><h2>Cuánto se gana según cómo se trabaja y cuánto se estudió</h2></div>
+        <p class="intro">Un asalariado privado gana en promedio el doble que uno público. Entrar a la educación superior es el salto educativo que más paga: un 46 % más por hora que terminar el bachillerato.</p>
+      </div>
+
+      <h3>Por tipo de empleo, 2025</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Categoría</th><th>% de los ocupados</th><th>2024 (US$ al mes)</th><th>2025 (US$ al mes)</th></tr></thead>
+          <tbody>
+            {WORK.map((w) => <tr><th scope="row">{w.n}</th><td>{pct(w.s)}</td><td>{usd(w.v24, 1)}</td><td>{usd(w.v, 1)}<span class="bar" style={`width:${(w.v / WORK[0].v * 100).toFixed(1)}%`}></span></td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p class="cap">Remuneración mensual promedio por persona ocupada. Fuente: <a href={SOURCE.pdf}>ENCOVI 2025</a>, lámina 34, y <a href={SOURCE.pdf2024}>ENCOVI 2024</a>, lámina 52.</p>
+
+      <h3>Por nivel educativo, 2024</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Nivel alcanzado</th><th>US$ por hora</th><th>Frente a sin nivel</th></tr></thead>
+          <tbody>
+            {EDUCATION.map((e) => <tr><th scope="row">{e.n}</th><td>{usd(e.v, 2)}</td><td>{nf(e.v / EDUCATION[0].v, 1)}×<span class="bar" style={`width:${(e.v / EDUCATION.at(-1)!.v * 100).toFixed(1)}%`}></span></td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p class="cap">Promedio de los ocupados mayores de 25 años. Fuente: <a href={SOURCE.pdf2024}>ENCOVI 2024</a>, lámina 58; la edición 2025 no publica este dato. Valores tal como se publican; la lámina indica −6,0 % para media incompleta, que no coincide con los montos mostrados. Úsalos para comparar niveles entre sí.</p>
+
+      <p class="cap">En 2024 los hombres ganaron 52 US$ al mes más que las mujeres (36,7 %) (<a href={SOURCE.pdf2024}>ENCOVI 2024</a>, lámina 56). ENCOVI no publica en sus presentaciones de 2024 y 2025 ingresos por edad ni por rama de actividad (industria), así que esos cortes no están aquí.</p>
+    </section>
+
+    <section class="wrap block" id="metodo">
+      <div class="head">
+        <div><p class="eyebrow"><b>06</b>Metodología</p><h2>Fuentes y cómo se hizo</h2></div>
+      </div>
+      <div class="method">
+        <p><b>Fuente.</b> Encuesta Nacional sobre Condiciones de Vida 2025 (ENCOVI), del Instituto de Investigaciones Económicas y Sociales de la UCAB. Muestra probabilística de {nf(ENCOVI.sample)} hogares, levantada entre marzo y junio de 2025, con referencia a mayo de 2025. Todas las cifras marcadas como ENCOVI se copian tal cual de la <a href={SOURCE.pdf}>presentación oficial de resultados</a>.</p>
+        <p><b>De los deciles a la calculadora.</b> ENCOVI publica el ingreso promedio por persona de cada decil, no los microdatos. Construimos una curva continua cuyo promedio en cada decil coincide con el publicado y ubicamos tu hogar en ella. Suponemos que los deciles ordenan a la población por ingreso por persona; la presentación no lo precisa. Los valores por debajo de {usd(Q(0), 1)} y por encima de {usd(Q(1))} por persona quedan fuera de la curva.</p>
+        <p><b>Ingreso del hogar.</b> Incluye ingresos laborales y no laborales: sueldos, cuenta propia, bonos, remesas y pensiones, en dólares del mes. Lo divides entre las personas del hogar; un hogar de 5 o más se calcula como de 6.</p>
+        <p><b>Lo que no está.</b> La presentación de ENCOVI 2025 no publica ingresos por región, así que no comparamos por zona. Tampoco publica el valor de las líneas de pobreza en dólares: las que mostramos son una estimación propia.</p>
+        <p><b>Limitaciones.</b> Las encuestas subestiman los ingresos más altos y los informales. La clase social es una etiqueta orientativa, no un diagnóstico de tu situación.</p>
+      </div>
+      <h3>Glosario</h3>
+      <dl class="gloss">
+        {glossary.map(([t, d]) => <div><dt>{t}</dt><dd>{d}</dd></div>)}
+      </dl>
+      <h3>Fuentes</h3>
+      <ul class="method">
+        <li><a href={SOURCE.pdf}>ENCOVI 2025: presentación de resultados</a>. UCAB-IIES, 7 de mayo de 2026.</li>
+        <li><a href={SOURCE.pdf2024}>ENCOVI 2024: presentación de resultados</a>. UCAB-IIES, abril de 2025.</li>
+        <li><a href={SOURCE.press}>ENCOVI 2025: pobreza y desigualdad disminuyen, sin evolución del bienestar social</a>. El Ucabista, 7 de mayo de 2026.</li>
+        <li><a href={SOURCE.site}>Proyecto ENCOVI</a>: ficha técnica y ediciones anteriores.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">{BRAND} · Calculadora de ingresos de los hogares venezolanos con datos de ENCOVI 2025 (UCAB). Inspirada en la calculadora de deciles de Cuenta de servilleta, de Colombia. Cifras en dólares corrientes.</div>
+  </footer>
+
+  <script>
+    import '../scripts/calculator';
+  </script>
+</Base>
