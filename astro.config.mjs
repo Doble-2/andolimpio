@@ -1,3 +1,3 @@
 import { defineConfig } from 'astro/config';
 
-export default defineConfig({ site: 'https://andolimpio.vercel.app' });
+export default defineConfig({ site: 'https://andolimpio.angelcalderon.dev' });

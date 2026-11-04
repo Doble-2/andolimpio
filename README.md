@@ -2,7 +2,7 @@
 
 ¿Cuántos venezolanos viven con menos que tu hogar? Escribes cuánto entra al mes en tu casa y cuántas personas viven en ella, y la página te ubica en la distribución del ingreso del país.
 
-**En vivo:** https://andolimpio.vercel.app
+**En vivo:** https://andolimpio.angelcalderon.dev
 
 ## Datos
 
