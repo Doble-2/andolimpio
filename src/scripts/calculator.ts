@@ -5,11 +5,13 @@ const S: { inc: number | null; si: number; hover: number | null } = { inc: 480, 
 const g = () => G(S.si);
 
 /* ---------- Densidad (KDE en log10) ---------- */
-const XMIN = 5, XMAX = 10000;
+// El eje se ajusta al rango de los datos para el tamaño de hogar elegido.
+let XMIN = 5, XMAX = 10000;
 let dens: Float64Array | null = null, densKey = '';
 function getDensity(gv: number) {
   const key = String(S.si);
   if (key === densKey && dens) return dens;
+  XMIN = gv * Q(0) * 0.6; XMAX = gv * Q(1) * 1.6;
   const N = 900, ys = new Float64Array(N);
   for (let i = 0; i < N; i++) ys[i] = Math.log10(Math.max(0.5, gv * Q((i + 0.5) / N)));
   const M = 220, h = 0.07, a = Math.log10(XMIN), b = Math.log10(XMAX), out = new Float64Array(M);
@@ -114,7 +116,7 @@ function drawChart() {
   const pts = Array.from(d, (v, i) => `${(L + (pw * i) / (d.length - 1)).toFixed(1)},${(base - (v / dmax) * ph * 0.94).toFixed(1)}`);
   const line = 'M' + pts.join('L'), area = `${line}L${L + pw},${base}L${L},${base}Z`;
   const xs = [L, ...Array.from({ length: 9 }, (_, k) => X(gv * Q((k + 1) / 10))), L + pw];
-  let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" font-family="Public Sans, sans-serif"><defs>`;
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" font-family="Plus Jakarta Sans, sans-serif"><defs>`;
   for (let k = 1; k <= 10; k++) s += `<clipPath id="cb${k}"><rect x="${xs[k - 1].toFixed(1)}" y="0" width="${Math.max(0, xs[k] - xs[k - 1]).toFixed(1)}" height="${base}"/></clipPath>`;
   s += '</defs>';
   for (let k = 1; k <= 10; k++) s += `<path d="${area}" style="fill:var(--d${k})" clip-path="url(#cb${k})"/>`;
@@ -122,9 +124,12 @@ function drawChart() {
   s += `<path d="${line}" fill="none" style="stroke:var(--ink)" stroke-width="1.4"/>`;
   for (let k = 1; k <= 10; k++) if (xs[k] - xs[k - 1] >= 16) s += `<text x="${((xs[k] + xs[k - 1]) / 2).toFixed(1)}" y="${base - 9}" text-anchor="middle" font-size="12" font-weight="800" style="fill:var(--f${k})">${k}</text>`;
   s += `<line x1="${L}" x2="${L + pw}" y1="${base}" y2="${base}" style="stroke:var(--ink)" stroke-width="1.2"/>`;
-  for (const t of [10, 30, 100, 300, 1000, 3000, 10000]) {
+  let lastX = -Infinity, first = true;
+  for (const t of [5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000]) {
     const x = X(t);
-    s += `<line x1="${x.toFixed(1)}" x2="${x.toFixed(1)}" y1="${base}" y2="${base + 5}" style="stroke:var(--ink)"/><text x="${x.toFixed(1)}" y="${base + 20}" text-anchor="${t === 10000 ? 'end' : 'middle'}" font-size="11.5" style="fill:var(--ink2)">${t === 10 ? 'US$ 10' : nf(t)}</text>`;
+    if (t < XMIN || t > XMAX || x - lastX < 46 || x > L + pw - 20) continue;
+    s += `<line x1="${x.toFixed(1)}" x2="${x.toFixed(1)}" y1="${base}" y2="${base + 5}" style="stroke:var(--ink)"/><text x="${x.toFixed(1)}" y="${base + 20}" text-anchor="middle" font-size="11.5" style="fill:var(--ink2)">${first ? 'US$ ' : ''}${nf(t)}</text>`;
+    lastX = x; first = false;
   }
   if (S.hover !== null) { const hx = X(S.hover); s += `<line x1="${hx.toFixed(1)}" x2="${hx.toFixed(1)}" y1="${T - 6}" y2="${base}" style="stroke:var(--ink)" stroke-width="1.2" stroke-dasharray="4 3"/>`; }
   if (S.inc !== null && !isNaN(S.inc) && S.inc > 0) {
