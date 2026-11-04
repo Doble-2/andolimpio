@@ -79,14 +79,14 @@ export const SHARES = BASE_AVG.map((v) => v / TOT);
 export const LINE_EXT = Q(ENCOVI.extremePersons);
 export const LINE_POOR = Q(ENCOVI.poorPersons);
 
-// Vulnerable, clase media y clase alta: propuesta de este sitio (múltiplos de la línea de pobreza), no oficial.
+// Vulnerable, ingresos medios e ingresos altos: propuesta de este sitio (múltiplos de la línea de pobreza), no oficial.
 const r = (n: number) => Math.round(n);
 export const CL = [
   { n: 'Pobreza extrema', c: '--c-ext', lt: LINE_EXT, def: `Menos de US$ ${r(LINE_EXT)} por persona al mes` },
   { n: 'Pobreza no extrema', c: '--c-pob', lt: LINE_POOR, def: `Entre US$ ${r(LINE_EXT)} y US$ ${r(LINE_POOR)}` },
-  { n: 'Vulnerable', c: '--c-vul', lt: 1.5 * LINE_POOR, def: `Entre US$ ${r(LINE_POOR)} y US$ ${r(1.5 * LINE_POOR)} (hasta 1,5 líneas)` },
-  { n: 'Clase media', c: '--c-med', lt: 3 * LINE_POOR, def: `Entre US$ ${r(1.5 * LINE_POOR)} y US$ ${r(3 * LINE_POOR)} (hasta 3 líneas)` },
-  { n: 'Clase alta', c: '--c-alt', lt: Infinity, def: `Más de US$ ${r(3 * LINE_POOR)} (más de 3 líneas)` },
+  { n: 'Vulnerable', c: '--c-vul', lt: 1.5 * LINE_POOR, def: `Entre US$ ${r(LINE_POOR)} y US$ ${r(1.5 * LINE_POOR)} (hasta 1,5 veces la línea)` },
+  { n: 'Ingresos medios', c: '--c-med', lt: 3 * LINE_POOR, def: `Entre US$ ${r(1.5 * LINE_POOR)} y US$ ${r(3 * LINE_POOR)} (hasta 3 veces la línea)` },
+  { n: 'Ingresos altos', c: '--c-alt', lt: Infinity, def: `Más de US$ ${r(3 * LINE_POOR)} (más de 3 veces la línea)` },
 ];
 
 export const G = (si: number) => MEMBERS[si];

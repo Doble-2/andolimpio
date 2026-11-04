@@ -30,7 +30,7 @@ const glossary = [
         <a href="#calculadora">Tu hogar</a>
         <a href="#cifras">Cifras clave</a>
         <a href="#distribucion">Distribución</a>
-        <a href="#clases">Clases sociales</a>
+        <a href="#clases">Niveles de ingreso</a>
         <a href="#evolucion">2023–2025</a>
         <a href="#trabajo">Trabajo y estudios</a>
         <a href="#metodo">Metodología</a>
@@ -89,6 +89,7 @@ const glossary = [
         </dl>
 
         <div class="cls"><span class="dot" id="clsDot"></span><p id="clsText"></p></div>
+        <button class="share" id="share" type="button" hidden>Compartir mi resultado</button>
         <p class="warn" id="warn" hidden></p>
 
         <details class="more">
@@ -143,7 +144,7 @@ const glossary = [
 
     <section class="wrap block" id="clases">
       <div class="head">
-        <div><p class="eyebrow"><b>03</b>Clases sociales</p><h2>¿En qué clase social queda tu hogar?</h2></div>
+        <div><p class="eyebrow"><b>03</b>Niveles de ingreso</p><h2>¿En qué nivel de ingreso queda tu hogar?</h2></div>
         <p class="intro">Comparamos el ingreso por persona de tu hogar con las líneas de pobreza. La barra representa a toda la población; la marca amarilla, a tu hogar.</p>
       </div>
       <div class="stack-wrap">
@@ -155,7 +156,7 @@ const glossary = [
       <div class="legend">
         {classes.map((c) => <div><span class="dot" style={`--cc:var(${c.c})`}></span><strong>{c.n}</strong><em>{c.pct < 1 ? 'menos de 1 %' : pct(c.pct)}</em><small>{c.def}</small></div>)}
       </div>
-      <p class="cap">Los dos primeros porcentajes son los publicados por ENCOVI 2025 para personas. ENCOVI no publica el valor en dólares de sus líneas; las estimamos en unos {usd(LINE_EXT)} (pobreza extrema) y {usd(LINE_POOR)} (pobreza) por persona al mes, que son los ingresos que dejan por debajo a esos porcentajes. Vulnerable, clase media y clase alta son una propuesta de este sitio, en múltiplos de la línea de pobreza; no existe una clasificación oficial.</p>
+      <p class="cap">Los dos primeros porcentajes son los publicados por ENCOVI 2025 para personas. ENCOVI no publica el valor en dólares de sus líneas; las estimamos en unos {usd(LINE_EXT)} (pobreza extrema) y {usd(LINE_POOR)} (pobreza) por persona al mes, que son los ingresos que dejan por debajo a esos porcentajes. Vulnerable, ingresos medios e ingresos altos son una propuesta de este sitio, en múltiplos de la línea de pobreza; no existe una clasificación oficial.</p>
     </section>
 
     <section class="wrap block" id="evolucion">
@@ -214,7 +215,7 @@ const glossary = [
         <p><b>De los deciles a la calculadora.</b> ENCOVI publica el ingreso promedio por persona de cada decil, no los microdatos. Construimos una curva continua cuyo promedio en cada decil coincide con el publicado y ubicamos tu hogar en ella. Suponemos que los deciles ordenan a la población por ingreso por persona; la presentación no lo precisa. Los valores por debajo de {usd(Q(0), 1)} y por encima de {usd(Q(1))} por persona quedan fuera de la curva.</p>
         <p><b>Ingreso del hogar.</b> Incluye ingresos laborales y no laborales: sueldos, cuenta propia, bonos, remesas y pensiones, en dólares del mes. Lo divides entre las personas del hogar; un hogar de 5 o más se calcula como de 6.</p>
         <p><b>Lo que no está.</b> La presentación de ENCOVI 2025 no publica ingresos por región, así que no comparamos por zona. Tampoco publica el valor de las líneas de pobreza en dólares: las que mostramos son una estimación propia.</p>
-        <p><b>Limitaciones.</b> Las encuestas subestiman los ingresos más altos y los informales. La clase social es una etiqueta orientativa, no un diagnóstico de tu situación.</p>
+        <p><b>Limitaciones.</b> Las encuestas subestiman los ingresos más altos y los informales. El nivel de ingreso es una etiqueta orientativa, no un diagnóstico de tu situación.</p>
       </div>
       <h3>Glosario</h3>
       <dl class="gloss">
@@ -232,7 +233,7 @@ const glossary = [
   </main>
 
   <footer>
-    <div class="wrap">{BRAND} · Calculadora de ingresos de los hogares venezolanos con datos de ENCOVI 2025 (UCAB). Inspirada en la calculadora de deciles de Cuenta de servilleta, de Colombia. Cifras en dólares corrientes.</div>
+    <div class="wrap">{BRAND} · Calculadora de ingresos de los hogares venezolanos con datos de ENCOVI 2025 (UCAB). Inspirada en la calculadora de deciles de Cuenta de servilleta, de Colombia. Cifras en dólares corrientes. Fuente: <a href={SOURCE.site}>Proyecto ENCOVI</a>.</div>
   </footer>
 
   <script>

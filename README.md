@@ -16,7 +16,7 @@ Supuestos y estimaciones propias (también explicados en la página):
 
 - Los deciles ordenan a la población por ingreso por persona; la presentación no lo precisa.
 - La ENCOVI no publica sus líneas de pobreza en dólares. Las estimamos (≈ US$ 75 extrema, ≈ US$ 188 total, por persona al mes) como el ingreso que deja por debajo al porcentaje de personas pobres publicado.
-- Vulnerable, clase media y clase alta son una propuesta del sitio, no una clasificación oficial.
+- Vulnerable, ingresos medios e ingresos altos son una propuesta del sitio, no una clasificación oficial.
 - Los extremos de la curva son una extrapolación.
 
 ## Desarrollo

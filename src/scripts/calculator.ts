@@ -66,7 +66,9 @@ function renderResult() {
     $('#s3l').textContent = `La línea de pobreza estimada es de ${usd(LINE_POOR)} por persona al mes`;
     const c = CL[cls];
     $('#clsDot').style.setProperty('--cc', `var(${c.c})`);
-    $('#clsText').innerHTML = `Por lo que le toca a cada persona, tu hogar se ubica en <strong>${c.n}</strong>: ${c.def.charAt(0).toLowerCase() + c.def.slice(1)}.`;
+    // Estar alto en la tabla y seguir en pobreza parece contradictorio; se explica en el mismo lugar.
+    const why = cls <= 1 && less >= 4 ? ` <span class="why">Ojo: en Venezuela el ${nf(ENCOVI.poorPersons * 100, 1)}\u00A0% de las personas está bajo la línea de pobreza, así que estar arriba en la tabla no significa salir de ella.</span>` : '';
+    $('#clsText').innerHTML = `Por lo que le toca a cada persona, tu hogar se ubica en <strong>${c.n}</strong>: ${c.def.charAt(0).toLowerCase() + c.def.slice(1)}.${why}`;
   }
   const w = $('#warn');
   const pcNow = has ? inc / MEMBERS[S.si] : 0;
@@ -158,8 +160,15 @@ function announce() {
   }, 700);
 }
 
+function shareText() {
+  const n = $('#decNum').textContent;
+  const dec = decOf(P((S.inc ?? 0) / MEMBERS[S.si]));
+  return `${n} de cada 10 venezolanos viven con menos que mi hogar: estoy en el grupo ${dec} de 10. ¿Y tú? Calcúlalo con datos de la ENCOVI 2025:`;
+}
+
 function renderAll() {
   renderTables(renderResult()); renderYou(); drawChart(); readout(); announce();
+  $('#share').hidden = S.inc === null;
 }
 
 // En el teléfono el resultado queda bajo el formulario: una barra fija lo resume hasta que se ve.
@@ -202,3 +211,20 @@ box.addEventListener('pointerleave', () => { S.hover = null; drawChart(); readou
 new ResizeObserver(drawChart).observe(box);
 
 setInc(S.inc);
+
+// Comparte el grupo, nunca el monto. En el teléfono abre el menú nativo; en escritorio copia el texto.
+const shareBtn = $<HTMLButtonElement>('#share');
+shareBtn.addEventListener('click', async () => {
+  const text = shareText(), url = location.origin + '/';
+  if (navigator.share) {
+    try { await navigator.share({ text, url }); } catch { /* el usuario canceló */ }
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(`${text} ${url}`);
+    shareBtn.textContent = 'Copiado. Pégalo donde quieras';
+  } catch {
+    window.open(`https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`, '_blank', 'noopener');
+  }
+  setTimeout(() => (shareBtn.textContent = 'Compartir mi resultado'), 2500);
+});
