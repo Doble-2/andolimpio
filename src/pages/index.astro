@@ -42,7 +42,7 @@ const glossary = [
     <section class="hero" id="calculadora">
       <div class="hero-band">
         <div class="wrap hero-intro">
-          <p class="kicker">Datos oficiales · ENCOVI 2025 · UCAB</p>
+          <p class="kicker">Datos ENCOVI 2025 · UCAB</p>
           <h1>¿Cuántos venezolanos viven con <em>menos</em> que tu hogar?</h1>
           <p class="lede">Escribe cuánto entra al mes en tu casa, en dólares, y mira dónde queda tu hogar en la distribución del ingreso del país.</p>
         </div>
@@ -71,7 +71,8 @@ const glossary = [
           <p class="note">Las cifras son de ENCOVI 2025 (mayo de 2025). La ubicación de tu hogar es una estimación propia a partir de ellas, no un dato oficial.</p>
         </div>
 
-      <section class="result" aria-live="polite" aria-label="Resultado">
+      <section class="result" id="resultado" aria-label="Resultado">
+        <p class="sr-only" id="live" aria-live="polite"></p>
         <div class="verdict">
           <p class="big"><span class="n" id="decNum">—</span></p>
           <p class="say" id="say"><noscript>Activa JavaScript para usar la calculadora.</noscript></p>
@@ -79,6 +80,7 @@ const glossary = [
         <ol class="ruler" id="ruler" aria-label="Los diez grupos de la población, de los que menos ganan a los que más ganan"></ol>
         <div class="ends" aria-hidden="true"><span>Ganan menos</span><span>Ganan más</span></div>
         <p class="where" id="where"></p>
+        <p class="asof">Comparado con ingresos de mayo de 2025 (ENCOVI 2025). Si los ingresos subieron desde entonces, tu posición real hoy puede ser algo más baja.</p>
 
         <dl class="stats">
           <div class="stat"><dt id="s1l"></dt><dd id="s1">—</dd></div>
@@ -127,7 +129,7 @@ const glossary = [
 
       <h3>Qué gana cada grupo</h3>
       <p class="cap" id="tabCap"></p>
-      <div class="tablewrap">
+      <div class="tablewrap" tabindex="0" role="region" aria-label="Qué gana cada grupo">
         <table>
           <thead><tr><th>Grupo</th><th>Desde (US$ al mes)</th><th>Ingreso promedio del hogar</th><th>Por persona (ENCOVI)</th><th>Parte del ingreso total</th></tr></thead>
           <tbody id="tbody"></tbody>
@@ -136,7 +138,7 @@ const glossary = [
 
       <h3>Cuánto necesita ganar un hogar para entrar a cada grupo</h3>
       <p class="cap" id="matCap"></p>
-      <div class="tablewrap"><table id="matrix"></table></div>
+      <div class="tablewrap" tabindex="0" role="region" aria-label="Ingreso mínimo para entrar a cada grupo según el tamaño del hogar"><table id="matrix"></table></div>
     </section>
 
     <section class="wrap block" id="clases">
@@ -147,7 +149,7 @@ const glossary = [
       <div class="stack-wrap">
         <div class="you" id="you" hidden><span>Tu hogar</span><i></i></div>
         <div class="stack">
-          {classes.map((c, i) => <div class={i === 2 ? 'dk' : ''} style={`flex:${Math.max(c.pct / 100, 0.004).toFixed(4)} 1 0;background:var(${c.c})`}>{c.pct >= 7 ? nf(c.pct) + ' %' : ''}</div>)}
+          {classes.map((c, i) => <div class={i === 1 || i === 2 ? 'dk' : ''} style={`flex:${Math.max(c.pct / 100, 0.004).toFixed(4)} 1 0;background:var(${c.c})`}>{c.pct >= 7 ? nf(c.pct) + ' %' : ''}</div>)}
         </div>
       </div>
       <div class="legend">
@@ -226,6 +228,7 @@ const glossary = [
         <li><a href={SOURCE.site}>Proyecto ENCOVI</a>: ficha técnica y ediciones anteriores.</li>
       </ul>
     </section>
+  <a class="peek" id="peek" href="#resultado" hidden><b id="peekN">—</b><span>de cada 10 venezolanos viven con menos que tu hogar</span><em>Ver resultado ↓</em></a>
   </main>
 
   <footer>

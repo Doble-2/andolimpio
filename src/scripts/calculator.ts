@@ -62,7 +62,7 @@ function renderResult() {
     $('#s1l').textContent = `Para cada persona del hogar, unos ${usd(pc / 30.4, pc / 30.4 < 10 ? 1 : 0)} al día`;
     $('#s2').innerHTML = `${nf(ratio, ratio < 10 ? 1 : 0)} <small>veces</small>`;
     $('#s2l').textContent = `Lo que gana un hogar mediano ${SIZE_TXT[S.si]} (${usd(med)} al mes)`;
-    $('#s3').innerHTML = `${nf(lines, 1)} <small>líneas</small>`;
+    $('#s3').innerHTML = `${nf(lines, 1)} <small>veces la línea de pobreza</small>`;
     $('#s3l').textContent = `La línea de pobreza estimada es de ${usd(LINE_POOR)} por persona al mes`;
     const c = CL[cls];
     $('#clsDot').style.setProperty('--cc', `var(${c.c})`);
@@ -148,9 +148,23 @@ function readout() {
   r.innerHTML = `Un hogar ${SIZE_TXT[S.si]} que gane <b>${usd(S.hover, 0)}</b> al mes queda en el grupo <b>${decOf(p)}</b> de 10: gana más que el <b>${pctTxt(p)}</b> de la población.`;
 }
 
-function renderAll() {
-  renderTables(renderResult()); renderYou(); drawChart(); readout();
+// El lector de pantalla oye solo el resumen, y cuando el usuario deja de escribir.
+let liveTimer = 0;
+function announce() {
+  $('#peekN').textContent = $('#decNum').textContent;
+  clearTimeout(liveTimer);
+  liveTimer = window.setTimeout(() => {
+    $('#live').textContent = S.inc === null ? '' : `${$('#decNum').textContent} ${$('#say').innerText.replace(/\s+/g, ' ')} ${$('#where').textContent}`;
+  }, 700);
 }
+
+function renderAll() {
+  renderTables(renderResult()); renderYou(); drawChart(); readout(); announce();
+}
+
+// En el teléfono el resultado queda bajo el formulario: una barra fija lo resume hasta que se ve.
+const peek = $('#peek');
+new IntersectionObserver(([e]) => { peek.hidden = e.isIntersecting || e.boundingClientRect.top < 0; }).observe($('#resultado'));
 
 /* ---------- Entradas ---------- */
 function parseIncome(v: string): number | null {
