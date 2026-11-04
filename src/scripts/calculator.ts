@@ -116,7 +116,7 @@ function drawChart() {
   const pts = Array.from(d, (v, i) => `${(L + (pw * i) / (d.length - 1)).toFixed(1)},${(base - (v / dmax) * ph * 0.94).toFixed(1)}`);
   const line = 'M' + pts.join('L'), area = `${line}L${L + pw},${base}L${L},${base}Z`;
   const xs = [L, ...Array.from({ length: 9 }, (_, k) => X(gv * Q((k + 1) / 10))), L + pw];
-  let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" font-family="Plus Jakarta Sans, sans-serif"><defs>`;
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Sans, sans-serif"><defs>`;
   for (let k = 1; k <= 10; k++) s += `<clipPath id="cb${k}"><rect x="${xs[k - 1].toFixed(1)}" y="0" width="${Math.max(0, xs[k] - xs[k - 1]).toFixed(1)}" height="${base}"/></clipPath>`;
   s += '</defs>';
   for (let k = 1; k <= 10; k++) s += `<path d="${area}" style="fill:var(--d${k})" clip-path="url(#cb${k})"/>`;

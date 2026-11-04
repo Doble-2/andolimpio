@@ -1,0 +1,18 @@
+---
+// El Ávila (Waraira Repano) visto desde Caracas, de oeste a este:
+// cumbre del Hotel Humboldt, la Silla de Caracas (picos Occidental y Oriental) y el Naiguatá.
+// Arriba, el arco de las ocho estrellas de la bandera.
+const stars = Array.from({ length: 8 }, (_, i) => {
+  const a = ((205 + (i * 130) / 7) * Math.PI) / 180;
+  return { x: 1120 + 150 * Math.cos(a), y: 78 + 70 * Math.sin(a) };
+});
+const star = 'M0,-7 L2.06,-2.83 L6.66,-2.16 L3.33,1.08 L4.11,5.66 L0,3.5 L-4.11,5.66 L-3.33,1.08 L-6.66,-2.16 L-2.06,-2.83Z';
+---
+<svg class="avila" viewBox="0 0 1440 360" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+  <g class="stars">{stars.map((s) => <path d={star} transform={`translate(${s.x.toFixed(1)} ${s.y.toFixed(1)})`} />)}</g>
+  <path class="far" d="M0 236 L90 222 L170 214 L250 190 L330 184 L410 160 L480 154 L560 168 L640 150 L720 132 L790 140 L860 118 L940 128 L1010 108 L1090 98 L1170 118 L1250 140 L1330 162 L1440 176 L1440 360 L0 360Z" />
+  <path class="mid" d="M0 262 L70 252 L140 246 L200 230 L260 222 L320 204 L380 196 L440 178 L490 166 L530 160 L570 166 L620 176 L670 168 L720 150 L760 128 L790 108 L812 122 L834 112 L858 96 L890 118 L930 132 L980 122 L1030 108 L1070 92 L1110 104 L1160 122 L1220 144 L1290 164 L1360 178 L1440 190 L1440 360 L0 360Z" />
+  <path class="main" d="M0 292 L60 280 L120 272 L170 258 L230 246 L280 228 L330 218 L380 202 L430 188 L470 174 L505 164 L532 158 L560 162 L600 172 L640 166 L680 150 L715 128 L742 104 L758 88 L772 98 L790 116 L806 118 L822 104 L842 82 L856 70 L872 86 L900 112 L940 126 L985 116 L1025 100 L1055 82 L1072 68 L1090 76 L1125 94 L1175 116 L1235 138 L1300 158 L1370 176 L1440 188 L1440 360 L0 360Z" />
+  <g class="main"><rect x="524" y="128" width="17" height="32" rx="3" /><rect x="521" y="124" width="23" height="6" rx="2" /></g>
+  <path class="near" d="M0 326 C180 308 360 312 520 320 C700 330 860 312 1040 316 C1200 320 1320 308 1440 312 L1440 360 L0 360Z" />
+</svg>

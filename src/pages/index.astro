@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import Avila from '../components/Avila.astro';
 import { CL, EDUCATION, ENCOVI, LINE_EXT, LINE_POOR, P, Q, RATIO, SOURCE, WORK, nf, usd } from '../lib/model';
 
 const BRAND = 'Andolimpio';
@@ -38,14 +39,17 @@ const glossary = [
   </header>
 
   <main>
-    <section class="wrap hero" id="calculadora">
-      <div class="hero-intro">
-        <p class="badge"><span aria-hidden="true"></span>Datos oficiales ENCOVI 2025 · UCAB</p>
-        <h1>¿Cuántos venezolanos viven con <em>menos</em> que tu hogar?</h1>
-        <p class="lede">Escribe cuánto entra al mes en tu casa, en dólares, y mira dónde queda tu hogar en la distribución del ingreso del país.</p>
+    <section class="hero" id="calculadora">
+      <div class="hero-band">
+        <div class="wrap hero-intro">
+          <p class="kicker">Datos oficiales · ENCOVI 2025 · UCAB</p>
+          <h1>¿Cuántos venezolanos viven con <em>menos</em> que tu hogar?</h1>
+          <p class="lede">Escribe cuánto entra al mes en tu casa, en dólares, y mira dónde queda tu hogar en la distribución del ingreso del país.</p>
+        </div>
+        <Avila />
       </div>
 
-      <div class="hero-grid">
+      <div class="wrap hero-grid">
         <div class="panel-in card">
           <div class="field">
             <label for="inc">¿Cuánto entra al mes en tu hogar?</label>
